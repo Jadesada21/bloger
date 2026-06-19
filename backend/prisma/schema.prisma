@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique @db.VarChar(100)
+  password  String   @db.VarChar(100)
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Blog {
+  id          Int          @id @default(autoincrement())
+  title       String       @db.VarChar(100)
+  slug        String       @db.VarChar(100)
+  summary     String       @db.VarChar(300)
+  content     String
+  coverImage  String       @db.VarChar(200)
+  viewCount   Int          @default(0)
+  isPublished Boolean      @default(false)
+  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt   DateTime     @updatedAt @db.Timestamptz(6)
+  images      Blog_image[]
+  comment     Comment[]
+
+  @@map("Blogs")
+}
+
+model Blog_image {
+  id        Int      @id @default(autoincrement())
+  url       String   @db.VarChar(200)
+  blogId    Int
+  blog      Blog     @relation(fields: [blogId], references: [id])
+  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @db.Timestamptz(6)
+
+  @@map("Blog_images")
+}
+
+model Comment {
+  id          Int      @id @default(autoincrement())
+  commentName String   @db.VarChar(100)
+  message     String   @db.VarChar(300)
+  blogId      Int
+  isApproved  Boolean  @default(false)
+  createdAt   DateTime @default(now()) @db.Timestamptz(6)
+  blog        Blog     @relation(fields: [blogId], references: [id])
+}
