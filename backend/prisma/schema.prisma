@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -16,18 +15,20 @@ model Admin {
 }
 
 model Blog {
-  id          Int          @id @default(autoincrement())
-  title       String       @db.VarChar(100)
-  slug        String       @db.VarChar(100)
-  summary     String       @db.VarChar(300)
-  content     String
-  coverImage  String       @db.VarChar(200)
-  viewCount   Int          @default(0)
-  isPublished Boolean      @default(false)
-  createdAt   DateTime     @default(now()) @db.Timestamptz(6)
-  updatedAt   DateTime     @updatedAt @db.Timestamptz(6)
-  images      Blog_image[]
-  comment     Comment[]
+  id                 Int          @id @default(autoincrement())
+  title              String       @db.VarChar(100)
+  slug               String       @unique @db.VarChar(100)
+  summary            String       @db.VarChar(300)
+  content            String       @db.Text()
+  coverImage         String?      @db.VarChar(200)
+  coverImagePublicId String?      @db.VarChar(200)
+  viewCount          Int          @default(0)
+  isPublished        Boolean      @default(false)
+  createdAt          DateTime     @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime     @updatedAt @db.Timestamptz(6)
+  deletedAt          DateTime?
+  images             Blog_image[]
+  comment            Comment[]
 
   @@map("Blogs")
 }
@@ -35,6 +36,7 @@ model Blog {
 model Blog_image {
   id        Int      @id @default(autoincrement())
   url       String   @db.VarChar(200)
+  publicId  String   @db.VarChar(200)
   blogId    Int
   blog      Blog     @relation(fields: [blogId], references: [id])
   createdAt DateTime @default(now()) @db.Timestamptz(6)
