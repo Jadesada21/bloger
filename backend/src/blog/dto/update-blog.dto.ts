@@ -14,9 +14,4 @@ export class UpdateBlogDto {
     @IsString()
     @IsOptional()
     content?: string
-
-    @IsString()
-    @IsOptional()
-    @MaxLength(300)
-    coverImage?: string
 }

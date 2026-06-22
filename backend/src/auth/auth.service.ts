@@ -29,7 +29,7 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync(payload)
 
-    return { accessToken, id: user.id, username: user.username };
+    return { accessToken, id: user.id, username: user.username, message: "Login uccessfully" };
   }
 
   logout() {

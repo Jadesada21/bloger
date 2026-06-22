@@ -8,7 +8,7 @@ import { UpdateCommentDto } from './dto/update-comment.dto';
 export class CommentController {
     constructor(private readonly commentService: CommentService) { }
 
-    @Post(':blog/blogId')
+    @Post('blog/:blogId')
     addComment(@Param('blogId') blogId: string, @Body() createCommentDto: CreateCommentDto) {
         return this.commentService.addComment(+blogId, createCommentDto)
     }

@@ -74,11 +74,11 @@ export class BlogService {
     const blog = await this.prisma.blog.findUnique({ where: { id } })
     if (!blog) { throw new NotFoundException(`Blog id ${id} not found`) }
 
+    const { url, publicId } = await this.cloudinaryService.uploadImage(file)
+
     if (blog.coverImagePublicId) {
       await this.cloudinaryService.deleteImage(blog.coverImagePublicId)
     }
-
-    const { url, publicId } = await this.cloudinaryService.uploadImage(file)
 
     return this.prisma.blog.update({
       where: { id },
@@ -88,6 +88,7 @@ export class BlogService {
 
   async updateSlug(id: number, updateSlugDto: UpdateSlugDto) {
     const blog = await this.findOne(id)
+    if (!blog) throw new NotFoundException(`Blog id ${id} not found`)
 
     const baseSlug = slugify(updateSlugDto.slug, { lower: true, strict: true })
     const newSlug = await this.generateUniqueSlug(baseSlug, id)

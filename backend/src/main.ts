@@ -11,7 +11,7 @@ async function bootstrap() {
 
   app.enableCors({
     origin: configService.get("FRONTEND_URL"),
-    Credential: true
+    Credentials: true
   })
 
   app.use(cookieParser())
