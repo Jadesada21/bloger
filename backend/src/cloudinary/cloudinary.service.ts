@@ -1,7 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { v2 as cloudinary } from 'cloudinary'
 import { Readable } from 'stream'
-import { Express } from 'express'
 import 'multer'
 
 
