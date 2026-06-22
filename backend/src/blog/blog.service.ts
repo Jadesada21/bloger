@@ -1,15 +1,14 @@
-import { Injectable, NotFoundException, UseGuards } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdatePublishedDto } from './dto/published-blog.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import slugify from 'slugify'
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { UpdateBlogDto } from './dto/update-blog.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UpdateSlugDto } from './dto/update-slug-blog.dto';
 
 
 @Injectable()
-@UseGuards(JwtAuthGuard)
 export class BlogService {
   constructor(
     private prisma: PrismaService,
@@ -27,17 +26,6 @@ export class BlogService {
         slug,
       },
     })
-  }
-
-  private async generateUniqueSlug(baseSlug: string): Promise<string> {
-    let slug = baseSlug
-    let counter = 1
-
-    while (await this.prisma.blog.findUnique({ where: { slug } })) {
-      slug = `${baseSlug}-${counter}`
-      counter++
-    }
-    return slug
   }
 
 
@@ -98,6 +86,19 @@ export class BlogService {
     })
   }
 
+  async updateSlug(id: number, updateSlugDto: UpdateSlugDto) {
+    const blog = await this.findOne(id)
+
+    const baseSlug = slugify(updateSlugDto.slug, { lower: true, strict: true })
+    const newSlug = await this.generateUniqueSlug(baseSlug, id)
+
+    return this.prisma.blog.update({
+      where: { id },
+      data: { slug: newSlug }
+    })
+
+  }
+
   async togglePublished(id: number, updatePublishedDto: UpdatePublishedDto) {
     return this.prisma.blog.update({
       where: { id },
@@ -117,5 +118,19 @@ export class BlogService {
       where: { id },
       data: { deletedAt: null }
     })
+  }
+
+  private async generateUniqueSlug(baseSlug: string, excludeId?: number): Promise<string> {
+
+    let slug = baseSlug
+    let counter = 1
+
+    while (true) {
+      const existing = await this.prisma.blog.findUnique({ where: { slug } })
+      if (!existing || existing.id === excludeId) break
+      slug = `${baseSlug}-${counter}`
+      counter++
+    }
+    return slug
   }
 }
