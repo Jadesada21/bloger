@@ -13,7 +13,6 @@ export class CloudinaryService {
     async uploadImage(
         file: Express.Multer.File
     ): Promise<{ url: string; publicId: string }> {
-        console.log(this.cloudinary.config())
         return new Promise((resolve, reject) => {
             const upload = this.cloudinary.uploader.upload_stream(
                 {
@@ -22,7 +21,6 @@ export class CloudinaryService {
                 },
                 (error, result) => {
                     if (error) {
-                        console.log('cloudinary upload error:', error);
                         reject(error);
                         return;
                     }

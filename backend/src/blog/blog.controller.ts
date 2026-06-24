@@ -24,6 +24,17 @@ export class BlogController {
     return this.blogService.findAll(page ? parseInt(page, 10) : 1);
   }
 
+  @Get('trash')
+  @UseGuards(JwtAuthGuard)
+  findDelete() {
+    return this.blogService.findDelete()
+  }
+
+  @Get('trash/:id')
+  @UseGuards(JwtAuthGuard)
+  findOneDelete(@Param('id') id: string) {
+    return this.blogService.findOneDelete(+id)
+  }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
@@ -38,7 +49,7 @@ export class BlogController {
 
   @Patch(':id/cover')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(FileInterceptor('coverImage', imageUploadOptions))
+  @UseInterceptors(FileInterceptor('cover', imageUploadOptions))
   updateCoverImage(@Param('id') id: string, @UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new BadRequestException('Cover image is required')

@@ -55,7 +55,7 @@ export class BlogService {
   }
 
   async findOne(id: number) {
-    const blog = await this.prisma.blog.findUnique({ where: { id } })
+    const blog = await this.prisma.blog.findFirst({ where: { id, deletedAt: null } })
 
     if (!blog) { throw new NotFoundException(`Blog id ${id} not found`) }
     return blog;
@@ -85,6 +85,7 @@ export class BlogService {
       data: { coverImage: url, coverImagePublicId: publicId }
     })
   }
+
 
   async updateSlug(id: number, updateSlugDto: UpdateSlugDto) {
     const blog = await this.findOne(id)
@@ -119,6 +120,22 @@ export class BlogService {
       where: { id },
       data: { deletedAt: null }
     })
+  }
+
+  async findDelete() {
+    return await this.prisma.blog.findMany({
+      where: { deletedAt: { not: null } },
+      orderBy: { deletedAt: 'desc' }
+    })
+  }
+
+  async findOneDelete(id: number) {
+    const blog = await this.prisma.blog.findFirst({
+      where: { id: id, deletedAt: { not: null } },
+    })
+
+    if (!blog) throw new NotFoundException(`Deleted blog id ${id} not found`)
+    return blog
   }
 
   private async generateUniqueSlug(baseSlug: string, excludeId?: number): Promise<string> {
