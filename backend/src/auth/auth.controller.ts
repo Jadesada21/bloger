@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import type { Response } from 'express';
@@ -25,8 +25,8 @@ export class AuthController {
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  refreshMe(@CurrentUser() user: { id: number, username: string }) {
-    return this.authService.refreshMe(user)
+  getMe(@CurrentUser() user: { id: number, username: string }) {
+    return this.authService.getMe(user)
   }
 
   @Post('logout')
